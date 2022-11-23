@@ -34,7 +34,8 @@ def get_dam_data(year,month,day,dam_ID):
     one_day=soup.find_all('tr')
 
     oneline=[]
-    result=[]
+    result={}
+    result2=[]
     for one_hour in one_day:
         for i in one_hour.find_all('td'):
             isnum=re.sub(r'[:|\.|/]','',i.text)
@@ -42,19 +43,18 @@ def get_dam_data(year,month,day,dam_ID):
                 oneline.append(i.text)
             else:
                 oneline.append('')
-        result.append([i for i in oneline])
+        result[oneline[1]]=[i for i in oneline]
         oneline=[]
 
-    middle_num=int((result[-1][1]).split(':')[0])+1
-    while(True):
-        if(result[-1][1]=='24:00'):
-            break
-        year='{0}/{1}/{2}'.format(year,month,day)
-        hour='{0:02d}:00'.format(middle_num)
-        result.append([year,hour,'','','','',''])
-        middle_num+=1
-         
-    return result
+    date='{0}/{1}/{2}'.format(year,month,day)
+    for h in range(1,24+1):
+        hour='{0:02d}:00'.format(h)
+        try:
+            result2.append([i for i in result[hour]])            
+        except KeyError:
+            result2.append([date,hour,'','','','',''])
+
+    return result2
 
 # csv_result=get_dam_data(input(),input(),input())
 # print(csv_result)
@@ -67,9 +67,15 @@ if(dam_ID==''):
 print('start year : ')
 start_year=int(input())
 print('start month : ')
-start_month=int(input())
+start_month=input()
+if(start_month==''):
+    start_month=1
+start_month=int(start_month)
 print('start day : ')
-start_day=int(input())
+start_day=input()
+if(start_day==''):
+    start_day=1
+start_day=int(start_day)
 print('end year : ')
 end_year=input()
 if(end_year==''):
